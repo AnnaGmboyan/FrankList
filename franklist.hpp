@@ -3,7 +3,12 @@
 
 template <typename T>
 FrankList<T>::Node::Node(T val, Node* next, Node* prev, Node* asc, Node* desc) :
-			val(val), next(next), prev(prev), asc(asc), desc(desc) { }
+			val(val), 
+			next(next),
+			prev(prev),
+			asc(asc), 
+			desc(desc)
+{ }
 
 template <typename T>
 FrankList<T>::FrankList()
@@ -182,7 +187,7 @@ void FrankList<T>::push_back(const_reference elem)
 			tail = head;
 			atail = head;
 			ahead = head;
-
+			return;
 		} else {
 
 			tail -> next = curr;
@@ -203,6 +208,7 @@ void FrankList<T>::push_front(const_reference elem)
 			tail = head;
 			atail = head;
 			ahead = head;
+			return;
 		} else {
 			curr -> next = head;
 			head -> prev = curr;
@@ -310,24 +316,717 @@ typename FrankList<T>::reference FrankList<T>::max()
 	}
 	return atail -> val;
 }
+template <typename T>
+const FrankList<T>& FrankList<T>::operator=(const FrankList<value_type>& rhv)
+{
+	if(this != &rhv)
+	{
+		clear();
+		Node* tmp = rhv.head;
+		while(tmp)
+		{
+				push_back(tmp -> val);
+				tmp = tmp -> next;
+		}
+	}
+}
+template <typename T>
+const FrankList<T>& FrankList<T>::operator=(FrankList<value_type>&& rhv)
+{
+	if(this != &rhv)
+	{
+			clear();
+			head = rhv.head;
+			tail = rhv.tail;
+			ahead = rhv.atail;
+			atail = rhv.atail;
+	}
+		
+}
+template <typename T>
+const FrankList<T>& FrankList<T>::operator=(std::initializer_list<value_type> init)
+{
+		clear();
+		for(auto it = init.begin(); it != init.end(); ++it)
+		{
+				push_back(*it);
+		}
+}
+template <typename T>
+bool FrankList<T>::operator==(const FrankList<value_type>& rhv) const
+{
+	if (size() != rhv.size()) {
+        return false;
+    }
+    Node* n1 = head;
+    Node* n2 = rhv.head;
+    for (n1, n2; n1; n1 = n1 -> next, n2 = n2 -> next) {
+        if (n1 -> val != n2 -> val) {
+            return false;
+        }
+    }
+    return true;
+}
+template <typename T>
+bool FrankList<T>::operator!=(const FrankList<value_type>& rhv) const
+{
+		return !(operator==(rhv));
+}
+template <typename T>
+bool FrankList<T>::operator<(const FrankList<value_type>& rhv) const
+{
+		//
+}
+template <typename T>
+bool FrankList<T>::operator>(const FrankList<value_type>& rhv) const
+{
+		//
+}
+template <typename T>
+bool FrankList<T>::operator<=(const FrankList<value_type>& rhv) const
+{
+		return !(operator>(rhv));
+}
+template <typename T>
+bool FrankList<T>::operator>=(const FrankList<value_type>& rhv) const
+{
+		return !(operator<(rhv));
+}
+//////////////////////////////////////////////////////////////////////////////////////// Base_iterator ////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T>
+FrankList<T>::base_iterator::base_iterator(Node* ptr)
+{
+		this -> ptr = ptr;
+}
+template <typename T>
+FrankList<T>::base_iterator::~base_iterator()
+{
+		this -> ptr = nullptr;
+}
+template <typename T>
+bool FrankList<T>::base_iterator::operator==(const base_iterator& rhv) const
+{
+		return (this -> ptr == rhv -> ptr);
+}
+template <typename T>
+bool FrankList<T>::base_iterator::operator!=(const base_iterator& rhv) const
+{
+		return !(operator==(rhv)); //ardyoq kkanchi franklist == te ir
+}
+
 /*
-	const FrankList<value_type>& operator=(const FrankList<value_type>& rhv); //O(n)
-    const FrankList<value_type>& operator=(FrankList<value_type>&& rhv); //O(n)
-    const FrankList<value_type>& operator=(std::initializer_list<value_type> init); //O(n)
 
-    bool operator==(const FrankList<value_type>& rhv) const; //O(n)
-    bool operator!=(const FrankList<value_type>& rhv) const; //O(n)
-    bool operator<(const FrankList<value_type>& rhv) const; //O(n)
-    bool operator<=(const FrankList<value_type>& rhv) const; //O(n)
-    bool operator>(const FrankList<value_type>& rhv) const; //O(n)
-    bool operator>=(const FrankList<value_type>& rhv) const; //O(n)
+  class base_iterator
+    {
+        friend FrankList<value_type>;
+    public:
+        ~base_iterator();
+        bool operator==(const base_iterator& rhv) const; //O(1)
+        bool operator!=(const base_iterator& rhv) const; //O(1)
+    protected:
+        explicit base_iterator(Node* ptr); //O(1)
+    protected:
+        Node* ptr = nullptr;
+    }
+*/
+///////////////////////////////////////////////////////////////////////////////////// const_itertor /////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T>
+FrankList<T>::const_iterator::const_iterator(Node* ptr)
+{
+		this -> ptr = ptr;
+}
 
+template <typename T>
+FrankList<T>::const_iterator::const_iterator(const base_iterator& rhv)
+{
+		this -> ptr = rhv.ptr;		
+}
+template <typename T>
+FrankList<T>::const_iterator::const_iterator(base_iterator&& rhv)
+{
+	if (this -> ptr != rhv.ptr) 
+	{
+		this -> ptr = rhv.ptr;	
+		rhv.ptr = nullptr;
+	}
+}
+
+template <typename T>
+const typename FrankList<T>::const_iterator& FrankList<T>::const_iterator::operator=(const base_iterator& rhv)
+{
+		this -> ptr = rhv.ptr;
+		return *this;
+}
+template <typename T>
+const typename FrankList<T>::const_iterator& FrankList<T>::const_iterator::operator=(base_iterator&& rhv)
+{
+		if(this -> ptr != rhv.ptr)
+		{
+				this -> ptr = rhv.ptr;
+				rhv.ptr = nullptr;
+		}
+		return *this;
+}
+template <typename T>
+typename FrankList<T>::const_reference FrankList<T>::const_iterator::operator*() const
+{
+		return this -> ptr -> val;		
+}
+template <typename T>
+typename FrankList<T>::const_pointer FrankList<T>::const_iterator::operator->() const
+{
+		return &(this -> ptr -> val);
+}
+template <typename T>
+const typename FrankList<T>::const_iterator& FrankList<T>::const_iterator::operator++()
+{
+		this -> ptr = this -> ptr -> next;
+		return *this;
+}
+template <typename T>
+const typename FrankList<T>::const_iterator FrankList<T>::const_iterator::operator++(int)
+{
+		const_iterator it(this -> ptr);
+		this -> ptr = this -> ptr -> next;
+		return it;
+}
+template <typename T>
+const typename FrankList<T>::const_iterator& FrankList<T>::const_iterator::operator--()
+{
+		this -> ptr = this -> ptr -> prev;
+		return *this;
+}
+template <typename T>
+const typename FrankList<T>::const_iterator FrankList<T>::const_iterator::operator--(int)
+{
+		const_iterator it(this -> ptr);
+		this -> ptr = this -> ptr -> prev;;
+		return it;
+}
+/*
+public:
+    class const_iterator : public base_iterator
+    {
+        friend FrankList<value_type>;
+    public:
+        const_iterator(const base_iterator& rhv); //O(1)
+        const_iterator(base_iterator&& rhv); //O(1)
+        
+        const const_iterator& operator=(const base_iterator& rhv); //O(1)
+        const const_iterator& operator=(base_iterator&& rhv); //O(1)
+        const_reference operator*() const; //O(1)
+        const_pointer operator->() const; //O(1)
+
+        const const_iterator& operator++(); //O(1)
+        const const_iterator operator++(value_type); //O(1)
+        const const_iterator& operator--(); //O(1)
+        const const_iterator operator--(value_type); //O(1)
+
+    protected:
+        explicit const_iterator(Node* ptr); //O(1)
+    };
 */
 
+//////////////////////////////////////////////////////////////////////////////////////////  iterator //////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T>
+FrankList<T>::iterator::iterator(Node* ptr) : const_iterator(ptr)
+{
+		this -> ptr = ptr;
+}
+template <typename T>
+FrankList<T>::iterator::iterator(const base_iterator& rhv)
+{
+		this -> ptr = rhv.ptr;
+}
+
+template <typename T>
+FrankList<T>::iterator::iterator(base_iterator&& rhv)
+{
+	if(this -> ptr != rhv.ptr)
+	{
+		this -> ptr = rhv.ptr;
+		rhv.ptr = nullptr;
+	}
+}
+template <typename T>
+typename FrankList<T>::reference FrankList<T>::iterator::operator*()
+{
+		return (this -> ptr -> val);
+}
+template <typename T>
+typename FrankList<T>::pointer FrankList<T>::iterator::operator->()
+{
+		return &(this -> ptr -> val);
+}
+template <typename T>
+const typename FrankList<T>::iterator& FrankList<T>::iterator::operator=(const base_iterator& rhv)
+{
+		this -> ptr = rhv.ptr;
+		return *this;
+}
+template <typename T>
+const typename FrankList<T>::iterator& FrankList<T>::iterator::operator=(FrankList<T>::base_iteartor&& rhv)
+{
+	if(this -> ptr != rhv.ptr)
+	{
+			this -> ptr = rhv.ptr;
+			rhv.ptr = nullptr;
+	}
+	return *this;
+}
+/*
+   public:
+    class iterator : public const_iterator
+    {
+        friend FrankList<value_type>;
+    public:
+        iterator(const base_iterator& rhv); //O(1)
+        iterator(base_iterator&& rhv); //O(1)
+
+        reference operator*(); //O(1)
+        pointer operator->(); //O(1)
+
+        const iterator& operator=(const base_iterator& rhv); //O(1)
+        const iterator& operator=(base_iterator&& rhv); //O(1)
+    protected:
+        explicit iterator(Node* ptr); //O(1)
+    };
+*/
+//////////////////////////////////////////////////////////////////////// const_reverse_iterator ////////////////////////////////////////////////////////////////////////////////
+
+template <typename T>
+FrankList<T>::const_reference_iterator::const_reference_iterator(Node* ptr) : base_iterator(ptr)
+{
+		this -> ptr = ptr;
+}
+template <typename T>
+FrankList<T>::const_reference_iterator::const_reference_iterator(const base_iterator& rhv)
+{
+		this -> ptr = rhv.ptr;
+}
+template <typename T>
+FrankList<T>::const_reference_iterator::const_reference_iterator(base_iterator&& rhv)
+{
+		this -> ptr = rhv.ptr;
+		rhv.ptr = nullptr;
+}
+template <typename T>
+const typename FrankList<T>::const_reverse_iterator& FrankList<T>::const_reverese_iterator::operator=(const base_iterator& rhv)
+{
+		this -> ptr = rhv.ptr;
+		return *this;
+}
+template <typename T>
+const typename FrankList<T>::const_reverse_iterator& FrankList<T>::const_reverese_iterator::operator=(base_iterator&& rhv)
+{
+	if(this -> ptr != rhv.ptr)
+	{			
+		this -> ptr = rhv.ptr;
+		rhv.ptr = nullptr;
+	}
+		return *this;
+}
+
+template <typename T>
+const typename FrankList<T>::const_reference FrankList<T>::const_reverse_iterator::operator*() const
+{
+	return this -> ptr -> val;		
+}
+
+template <typename T>
+const typename FrankList<T>::const_pointer FrankList<T>::const_reverse_iterator::operator->() const
+{
+	return &(this -> ptr -> val);		
+}
+template <typename T>
+const typename FrankList<T>::const_reverse_iterator& FrankList<T>::const_reverse_iterator::operator++()
+{
+	this -> ptr = this -> ptr -> prev;
+	return *this;
+}
+template <typename T>
+const typename FrankList<T>::const_reverse_iterator FrankList<T>::const_reverse_iterator::operator++(int)
+{
+	const_reverse_iterator tmp(this -> ptr);
+	this -> ptr = this -> ptr -> prev;
+	return tmp;
+}
+template <typename T>
+const typename FrankList<T>::const_reverse_iterator& FrankList<T>::const_reverse_iterator::operator--()
+{
+	this -> ptr = this -> ptr -> next;
+	return *this;
+}
+template <typename T>
+const typename FrankList<T>::const_reverse_iterator FrankList<T>::const_reverse_iterator::operator--(int)
+{
+	const_reverse_iterator tmp(this -> ptr);
+	this -> ptr = this -> ptr -> next;
+	return tmp;
+}
+/*
+public:
+    class const_reverse_iterator : public base_iterator
+    {
+        friend FrankList<value_type>;
+    public:
+        const_reverse_iterator(const base_iterator& rhv); //O(1)
+        const_reverse_iterator(base_iterator&& rhv); //O(1)
+
+        const const_reverse_iterator& operator=(const base_iterator& rhv); //O(1)
+        const const_reverse_iterator& operator=(base_iterator&& rhv); //O(1)
+        const_reference operator*() const; //O(1)
+        const_pointer operator->() const; //O(1)
+
+        const const_reverse_iterator& operator++(); //O(1)
+        const const_reverse_iterator operator++(value_type); //O(1)
+        const const_reverse_iterator& operator--(); //O(1)
+        const const_reverse_iterator operator--(value_type); //O(1)
+
+    protected:
+        explicit const_reverse_iterator(Node* ptr); //O(1)
+    };
+  */ 
+/////////////////////////////////////////////////////////////// reverse_iterator  ////////////////////////////////////////////////////////////////////////////////
+template <typename T>
+FrankList<T>::reverse_iterator::reverse_iterator(Node* ptr) : const_reverse_iterator(ptr)
+{
+		this -> ptr = ptr;
+}
+template <typename T>
+FrankList<T>::reverse_iterator::reverse_iterator(const base_iterator& rhv)
+{
+		this -> ptr = rhv.ptr;
+}
+
+template <typename T>
+FrankList<T>::reverse_iterator::reverse_iterator(base_iterator&& rhv)
+{
+	if(this -> ptr != rhv.ptr)
+	{
+		this -> ptr = rhv.ptr;
+		rhv.ptr = nullptr;
+	}
+}
+template <typename T>
+typename FrankList<T>::reference FrankList<T>::reverse_iterator::operator*()
+{
+		return	this -> ptr -> val;
+}
+template <typename T>
+typename FrankList<T>::pointer FrankList<T>::reverese_iterator::operator->()
+{
+		return &(this -> ptr -> val);
+}
+template <typename T>
+const typename FrankList<T>::reverse_iterator& FrankList<T>::reverse_iterator::operator=(const base_iterator& rhv)
+{
+		this -> ptr = rhv.ptr;
+		return *this;
+}
+template <typename T>
+const typename FrankList<T>::reverse_iterator& FrankList<T>::reverse_iterator::operator=(base_iteartor&& rhv)
+{
+	if(this -> ptr != rhv.ptr)
+	{
+			this -> ptr = rhv.ptr;
+			rhv.ptr = nullptr;
+	}
+	return *this;
+}
+/*
+    class reverse_iterator : public const_reverse_iterator
+    {
+        friend FrankList<value_type>;
+    public:
+        reverse_iterator(const base_iterator& rhv); //O(1)
+        reverse_iterator(base_iterator&& rhv); //O(1)
+
+        reference operator*(); //O(1)
+        pointer operator->(); //O(1)
+
+        const reverse_iterator& operator=(const base_iterator& rhv); //O(1)
+        const reverse_iterator& operator=(base_iterator&& rhv); //O(1)
+
+    protected:
+        explicit reverse_iterator(Node* ptr); //O(1)
+    };
+*/
+///////////////////////////////////////////////////////////////////////// const_asc_iterator /////////////////////////////////////////////////////////////
+template <typename T>
+FrankList<T>::const_asc_iterator::const_asc_iterator(Node* ptr) : base_iterator(ptr)
+{
+		this -> ptr = ptr;
+}
+template <typename T>
+FrankList<T>::const_asc_iterator::const_asc_iterator(const base_iterator& rhv)
+{
+		this -> ptr = rhv.ptr;
+}
+template <typename T>
+FrankList<T>::const_asc_iterator::const_asc_iterator(base_iterator&& rhv)
+{
+		this -> ptr = rhv.ptr;
+		rhv.ptr = nullptr;
+}
+template <typename T>
+const typename FrankList<T>::const_asc_iterator& FrankList<T>::const_asc_iterator::operator=(const base_iterator& rhv)
+{
+		this -> ptr = rhv.ptr;
+		return *this;
+}
+template <typename T>
+const typename FrankList<T>::const_asc_iterator& FrankList<T>::const_asc_iterator::operator=(base_iterator&& rhv)
+{
+	if(this -> ptr != rhv.ptr)
+	{			
+		this -> ptr = rhv.ptr;
+		rhv.ptr = nullptr;
+	}
+		return *this;
+}
+
+template <typename T>
+const typename FrankList<T>::const_reference FrankList<T>::const_asc_iterator::operator*() const
+{
+	return this -> ptr -> val;		
+}
+
+template <typename T>
+const typename FrankList<T>::const_pointer FrankList<T>::const_asc_iterator::operator->() const
+{
+	return &(this -> ptr -> val);		
+}
+template <typename T>
+const typename FrankList<T>::const_asc_iterator& FrankList<T>::const_asc_iterator::operator++()
+{
+	this -> ptr = this -> ptr -> asc;
+	return *this;
+}
+template <typename T>
+const typename FrankList<T>::const_asc_iterator FrankList<T>::const_asc_iterator::operator++(int)
+{
+	const_asc_iterator tmp(this -> ptr);
+	this -> ptr = this -> ptr -> asc;
+	return tmp;
+}
+template <typename T>
+const typename FrankList<T>::const_asc_iterator& FrankList<T>::const_asc_iterator::operator--()
+{
+	this -> ptr = this -> ptr -> desc;
+	return *this;
+}
+template <typename T>
+const typename FrankList<T>::const_asc_iterator FrankList<T>::const_asc_iterator::operator--(int)
+{
+	const_asc_iterator tmp(this -> ptr);
+	this -> ptr = this -> ptr -> desc;
+	return tmp;
+}
+/*
+public:
+    class const_asc_iterator :public base_iterator
+    {
+        friend FrankList<value_type>;
+    public:
+        const_asc_iterator(const base_iterator& rhv); //O(1)
+        const_asc_iterator(base_iterator&& rhv); //O(1)
+
+        const const_asc_iterator& operator=(const base_iterator& rhv); //O(1)
+        const const_asc_iterator& operator=(base_iterator&& rhv); //O(1)
+        const_reference operator*() const; //O(1)
+        const_pointer operator->() const; //O(1)
+
+        const const_asc_iterator& operator++(); //O(1)
+        const const_asc_iterator operator++(value_type); //O(1)
+        const const_asc_iterator& operator--(); //O(1)
+        const const_asc_iterator operator--(value_type); //O(1)
+
+    protected:
+        explicit const_asc_iterator(Node* ptr); //O(1)
+    };
+*/
+////////////////////////////////////////////////////////////////////////// asc_iterator ////////////////////////////////////////////////////////////////////////////////	
+template <typename T>
+FrankList<T>::asc_iterator::asc_iterator(Node* ptr) : const_asc_iterator(ptr)
+{
+		this -> ptr = ptr;
+}
+template <typename T>
+FrankList<T>::asc_iterator::asc_iterator(const base_iterator& rhv)
+{
+		this -> ptr = rhv.ptr;
+}
+
+template <typename T>
+FrankList<T>::asc_iterator::asc_iterator(base_iterator&& rhv)
+{
+	if(this -> ptr != rhv.ptr)
+	{
+		this -> ptr = rhv.ptr;
+		rhv.ptr = nullptr;
+	}
+}
+template <typename T>
+typename FrankList<T>::reference FrankList<T>::reverse_iterator::operator*()
+{
+		return	this -> ptr -> val;
+}
+template <typename T>
+typename FrankList<T>::pointer FrankList<T>::reverese_iterator::operator->()
+{
+		return &(this -> ptr -> val);
+}
+template <typename T>
+const typename FrankList<T>::reverse_iterator& FrankList<T>::reverse_iterator::operator=(const base_iterator& rhv)
+{
+		this -> ptr = rhv.ptr;
+		return *this;
+}
+template <typename T>
+const typename FrankList<T>::reverse_iterator& FrankList<T>::reverse_iterator::operator=(base_iteartor&& rhv)
+{
+	if(this -> ptr != rhv.ptr)
+	{
+			this -> ptr = rhv.ptr;
+			rhv.ptr = nullptr;
+	}
+	return *this;
+	/*
+public:
+    class asc_iterator : public const_asc_iterator
+    {
+        friend FrankList<value_type>;
+    public:
+        asc_iterator(const base_iterator& rhv); //O(1)
+        asc_iterator(base_iterator&& rhv); //O(1)
+
+        reference operator*(); //O(1)
+        pointer operator->(); //O(1)
+
+        const asc_iterator& operator=(const base_iterator& rhv); //O(1)
+        const asc_iterator& operator=(base_iterator&& rhv); //O(1)
+
+    protected:
+        explicit asc_iterator(Node* ptr); //O(1)
+    };
+public:
+    class const_desc_iterator : public base_iterator
+    {
+        friend FrankList<value_type>;
+    public:
+        const_desc_iterator(const base_iterator& rhv); //O(1)
+        const_desc_iterator(base_iterator&& rhv); //O(1)
+
+        const const_desc_iterator& operator=(const base_iterator& rhv); //O(1)
+        const const_desc_iterator& operator=(base_iterator&& rhv); //O(1)
+        const_reference operator*() const; //O(1)
+        const_pointer operator->() const; //O(1)
+
+        const const_desc_iterator& operator++(); //O(1)
+        const const_desc_iterator operator++(value_type); //O(1)
+        const const_desc_iterator& operator--(); //O(1)
+        const const_desc_iterator operator--(value_type); //O(1)
+
+    protected:
+        explicit const_desc_iterator(Node* ptr); //O(1)
+    };
+public:
+    class desc_iterator : public const_desc_iterator
+    {
+        friend FrankList<value_type>;
+    public:
+        desc_iterator(const base_iterator& rhv); //O(1)
+        desc_iterator(base_iterator&& rhv); //O(1)
+
+        reference operator*(); //O(1)
+        pointer operator->(); //O(1)
+
+        const desc_iterator& operator=(const base_iterator& rhv); //O(1)
+        const desc_iterator& operator=(base_iterator&& rhv); //O(1)
+
+    protected:
+        explicit desc_iterator(Node* ptr); //O(1)
+    };
+public:
+    class const_multi_iterator : public base_iterator
+    {
+        friend FrankList<value_type>;
+    public:
+        const_multi_iterator(const base_iterator& rhv); //O(1)
+        const_multi_iterator(base_iterator&& rhv); //O(1)
+
+        const const_multi_iterator& operator=(const base_iterator& rhv); //O(1)
+        const const_multi_iterator& operator=(base_iterator&& rhv); //O(1)
+        const_reference operator*() const; //O(1)
+        const_pointer operator->() const; //O(1)
+
+        const const_multi_iterator& operator++(); //O(1)
+        const const_multi_iterator operator++(value_type); //O(1)
+        const const_multi_iterator& operator--(); //O(1)
+        const const_multi_iterator operator--(value_type); //O(1)
+
+        void chmod(); //O(1)
+    protected:
+        explicit const_multi_iterator(Node* ptr); //O(1)
+        bool mode = true;
+    };
+public:
+    class multi_iterator : public const_multi_iterator
+    {
+        friend FrankList<value_type>;
+    public:
+        multi_iterator(const base_iterator& rhv); //O(1)
+        multi_iterator(base_iterator&& rhv); //O(1)
+
+        reference operator*(); //O(1)
+        pointer operator->(); //O(1)
+
+        const multi_iterator& operator=(const base_iterator& rhv); //O(1)
+        const multi_iterator& operator=(base_iterator&& rhv); //O(1)
+
+    protected:
+        explicit multi_iterator(Node* ptr); //O(1)
+    };
+public:
+    class const_multi_reverse_iterator : public base_iterator
+    {
+        friend FrankList<value_type>;
+    public:
+        const_multi_reverse_iterator(const base_iterator& rhv); //O(1)
+        const_multi_reverse_iterator(base_iterator&& rhv); //O(1)
+
+        const const_multi_reverse_iterator& operator=(const base_iterator& rhv); //O(1)
+        const const_multi_reverse_iterator& operator=(base_iterator&& rhv); //O(1)
+        const_reference operator*() const; //O(1)
+        const_pointer operator->() const; //O(1)
+
+        const const_multi_reverse_iterator& operator++(); //O(1)
+        const const_multi_reverse_iterator operator++(value_type); //O(1)
+        const const_multi_reverse_iterator& operator--(); //O(1)
+        const const_multi_reverse_iterator operator--(value_type); //O(1)
+
+
+        void chmod(); //O(1)
+    protected:
+        explicit const_multi_reverse_iterator(Node* ptr); //O(1)
+        bool mode = true;
+    };
+*/   
+template <typename T>
+void FrankList<T>::pprint()
+{
+		Node* tmp = head;
+		while(tmp)
+		{
+				std::cout << tmp -> val  << " ";
+				tmp = tmp -> next;
+		}
+}
 template <typename T>
 void FrankList<T>::print(bool sorted, bool reversed)
 {
-/*
+
    Node* ptr = nullptr;
 	if(!sorted && !reversed) {
 		ptr = head;
@@ -351,7 +1050,7 @@ void FrankList<T>::print(bool sorted, bool reversed)
 					ptr = ptr -> prev;
 			}
 	} else { //sorted and reversed
-			int counter = 0;
+	/*		int counter = 0;
 			ptr = atail;
 				std::cout << ptr -> val << std::endl;
 				ptr = ptr -> desc;
@@ -368,7 +1067,7 @@ void FrankList<T>::print(bool sorted, bool reversed)
 			//	std::cout << ptr -> val << std::endl;
 				ptr = ptr -> desc;
 				std::cout <<  ptr << std::endl;
-			}
+		
 		while(ptr -> desc)
 			{
 					if (ptr->desc != nullptr)
@@ -386,14 +1085,23 @@ void FrankList<T>::print(bool sorted, bool reversed)
 					ptr = ptr -> desc;
 
 			}
-	}	
-*/
+	}
+	*/
+		Node* tmp = atail;
+		while(tmp)
+		{
+			std::cout << tmp -> val << " ";
+			tmp = tmp ->desc;
+		}
+	}
+/*
  Node* tmp = nullptr;
 
     if (sorted && reversed) {
         tmp = atail;
         while (tmp)
         {
+			std::cout << 4 << " ";
             std::cout << tmp->val << " ";
             tmp = tmp->desc;
         }
@@ -401,6 +1109,7 @@ void FrankList<T>::print(bool sorted, bool reversed)
         tmp = ahead;
         while (tmp)
         {
+			std::cout << 3 << " ";
             std::cout << tmp->val << " ";
             tmp = tmp->asc;
         }
@@ -408,6 +1117,7 @@ void FrankList<T>::print(bool sorted, bool reversed)
         tmp = tail;
         while (tmp)
         {
+			std::cout << 2 << " ";
             std::cout << tmp->val << " ";
             tmp = tmp->prev;
         }
@@ -420,7 +1130,7 @@ void FrankList<T>::print(bool sorted, bool reversed)
             tmp = tmp->next;
         }
     }
-
+*/
     std::cout << std::endl;
 }
 template <typename T>
@@ -446,10 +1156,10 @@ void FrankList<T>::put_in_sorted_order(Node* ptr) //
 		{
 			curr = curr -> asc;
 		}
+		ptr -> asc = curr;
+		ptr -> desc = curr -> desc;
 		curr -> desc -> asc = ptr;
 		curr -> desc = ptr;
-		ptr -> desc = curr -> desc;
-		ptr -> asc = curr;
 	}
 }
 

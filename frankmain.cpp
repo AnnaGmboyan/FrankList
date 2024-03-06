@@ -13,8 +13,14 @@ int main()
 
 		
 		FrankList<int> list2 {1,5,3,2,9,6};
-//		list.print();
+	//	list2.pprint();
+	//	std::cout << std::endl;
+	//	list.pprint();
+		list2.print();
 		list2.print(1);
+		list2.print(0,1);
+//		list2.print(1,1);
+
 		std::cout << std::endl;
 /*
 		list2.print(1);
